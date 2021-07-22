@@ -1,0 +1,307 @@
+import pygame, sys, time, random
+from pygame.locals import *
+
+pygame.init()
+pygame.mixer.init()
+fenetre= pygame.display.set_mode ((1000,400))
+fond = pygame.font.Font('freesansbold.ttf', 18)
+fond2 = pygame.font.Font('freesansbold.ttf', 50)
+image_droite_rambo = pygame.image.load('C:\Jeu personnages\chasseur.png')
+bullet = pygame.image.load('C:\Jeu personnages\Z.gif')
+bg=pygame.image.load('C:\Jeu personnages\OIP.png')
+cs = pygame.image.load('C:\Jeu personnages\OIP (2).png')
+papi = pygame.image.load('C:\Jeu personnages\OIP (1).png')
+sanglier_image = pygame.image.load('C:\Jeu personnages\OIP (3).png')
+Icone = pygame.image.load('C:\Jeu personnages\OIP.ico')
+coeur1 = pygame.image.load('C:\Jeu personnages\OIP (6).png')
+coeur2 = pygame.image.load('C:\Jeu personnages\OIP (6).png')
+soldier_image = pygame.image.load('C:\Jeu personnages\OIP (4).png')
+space_soldier_image = pygame.image.load('C:\Jeu personnages\OIP (5).png')
+james_image = pygame.image.load('C:\Jeu personnages\OIP (7).png')
+icone_balle = pygame.image.load('C:\Jeu personnages\OIP (8).png')
+menu_img = pygame.image.load('C:\Jeu personnages\OIP (13).png')
+bouton_jouer = pygame.image.load('C:\Jeu personnages\OIP (12).png')
+bouton_quitter = pygame.image.load('C:\Jeu personnages\OIP (14).png')
+play = pygame.image.load('C:\Jeu personnages\OIP (15).png')
+boss = pygame.image.load('C:\Jeu personnages\OIP (9).png')
+boss_fire = pygame.image.load('C:\Jeu personnages\OIP (10).png')
+stop = pygame.image.load('C:\Jeu personnages\OIP (16).png')
+menu_musique = pygame.mixer.Sound('C:\Jeu personnages\OIP.mp3')
+pygame.mixer.music.load('C:\Jeu personnages\OIP (1).mp3')
+pygame.display.set_icon(Icone)
+
+RED = 255, 0, 0
+YELLOW = 220, 220, 0
+50
+tir = 0
+close = 0
+Won = 0
+menu = 1
+
+jouer = bouton_jouer.get_rect(topleft = (370, 240))
+quitter = bouton_quitter.get_rect(topleft = (362, 300))
+bouton_son_play = play.get_rect(topleft = (0, 0))
+bouton_son_quitter = stop.get_rect(topleft = (0,0))
+
+vie_sanglier = [1, 1, 1, 1, 1]
+vie_chasseur = [1]
+image_son = play
+
+nb_balles = 10
+son_joué = 1
+
+class Chasseur () :
+    def __init__ (self) :
+        self.x = 0
+        self.y = 0
+        self.image = image_droite_rambo
+        self.increment = 15
+       
+    def affichage (self) :
+        fenetre.blit(self.image,(self.x, self.y))
+       
+    def deplacement_haut (self) :
+        self.y -= self.increment
+       
+    def deplacement_bas (self) :
+        self.y += self.increment
+       
+class Balle () :
+    def __init__(self) :
+        self.x = 0
+        self.y = 0
+        self.image = bullet
+        self.increment = 2
+       
+    def affichage (self) :
+        fenetre.blit(self.image,(self.x, self.y))
+       
+    def deplacement (self) :
+        self.x += self.increment
+
+class animal () :
+    def __init__(self) :
+        self.x = 1000
+        self.y = 0
+        self.image = sanglier_image
+        self.increment = 1.25
+
+    def affichage(self) :
+        fenetre.blit(self.image,(self.x, self.y))
+
+    def deplacement_gauche (self) :
+        self.x -= self.increment
+
+def write (texte, x, y) :
+    fenetre.blit(texte,(x, y))
+               
+joueur = Chasseur()
+balle = Balle()
+sanglier = animal()
+
+barbu_rect = papi.get_rect(topleft = (0,0))
+chasseur_rect = image_droite_rambo.get_rect(topleft = (200,0))
+cs_rect = cs.get_rect(topleft = (400,0))
+soldier_rect = soldier_image.get_rect(topleft = (600,0))
+space_soldier_rect = space_soldier_image.get_rect(topleft = (800,0))
+james_rect = james_image.get_rect(topleft = (0, 200))
+
+pygame.key.set_repeat(1,20)
+menu_musique.play()
+
+if menu == 1 :
+   
+    while menu: # boucle principale
+        pygame.display.set_caption('Menu')
+   
+        for event in pygame.event.get():
+            if event.type == QUIT :
+                pygame.quit()
+                sys.exit()
+               
+            if event.type == KEYDOWN :
+               
+                if event.key == K_ESCAPE :
+                    pygame.quit()
+                    sys.exit()
+           
+            if event.type == MOUSEBUTTONDOWN and event.button == 1:
+           
+                if jouer.collidepoint(event.pos) :
+                    menu_musique.stop()
+                    menu = 0
+               
+                if quitter.collidepoint(event.pos) :
+                    pygame.quit()
+                    sys.exit()
+           
+                if bouton_son_play.collidepoint(event.pos):
+                    image_son = stop
+                    menu_musique.stop()
+                    son_joué = 0
+                
+
+        fenetre.blit(menu_img,(0,0))
+        fenetre.blit(image_son,(0,0))
+        fenetre.blit(bouton_jouer,(370, 240))
+        fenetre.blit(bouton_quitter,(362, 300))
+        pygame.display.flip()
+
+pygame.display.set_caption(('Choose your soldier'))
+
+while True :
+    for event in pygame.event.get() :
+        if event.type == QUIT :
+            pygame.quit()
+            sys.exit()
+        
+        if event.type == MOUSEBUTTONDOWN and event.button == 1:
+            if barbu_rect.collidepoint(event.pos) :
+                joueur.image = papi
+                close = 1
+
+            if chasseur_rect.collidepoint(event.pos) :
+                joueur.image = image_droite_rambo
+                close = 1
+                
+            if cs_rect.collidepoint(event.pos) :               
+                joueur.image = cs
+                close = 1
+
+            if soldier_rect.collidepoint(event.pos) :
+                joueur.image = soldier_image
+                close = 1
+
+            if space_soldier_rect.collidepoint(event.pos) :
+                joueur.image = space_soldier_image
+                close = 1
+        
+            if james_rect.collidepoint(event.pos) :
+                joueur.image = james_image
+                close = 1    
+                                               
+    fenetre.blit(bg, (0,0))
+    fenetre.blit(papi,(0,0))
+    fenetre.blit(image_droite_rambo,(200,0))
+    fenetre.blit(cs,(400,0))
+    fenetre.blit(soldier_image,(600,0))
+    fenetre.blit(space_soldier_image,(800,0))
+    fenetre.blit(james_image,(0,200))
+    pygame.display.flip()
+
+    if close == 1 :
+        break
+
+close = 0
+
+pygame.display.set_caption('Level 1, training : Kill the wild boar')
+
+fenetre.blit(bg, (0,0))
+Level1Surf = fond2.render('TRAINING', True, RED)
+write(Level1Surf, 350, 100)
+pygame.display.flip()
+time.sleep(2)
+KillSurf = fond2.render('KILL THE WILD BOAR !', True, RED)
+write(KillSurf, 200, 200)
+pygame.display.flip()
+time.sleep(3)
+
+while True :
+    if Won == 1 :
+        break
+    
+    for event in pygame.event.get() :
+        if event.type == QUIT :
+            pygame.quit()
+            sys.exit()
+           
+        if event.type == KEYDOWN :
+
+            if event.key == K_RETURN and tir == 0 and nb_balles > 0:
+                if son_joué == 1 :
+                    pygame.mixer.music.play(1, 0.9, 0)
+                nb_balles-=1
+                tir=1
+               
+            if event.key == K_UP :
+                joueur.deplacement_haut()
+           
+            if event.key == K_DOWN :
+                joueur.deplacement_bas()
+
+    sanglier.deplacement_gauche()
+    sanglier_rect = sanglier_image.get_rect(topleft = (sanglier.x, sanglier.y))
+    
+    if balle.x > 1000 :
+        balle.x = joueur.x 
+        balle.y = joueur.y 
+        tir = 0
+
+    if tir == 1 :
+        balle.deplacement()
+               
+    if tir == 0 :
+        balle.x = joueur.x +50
+        balle.y = joueur.y +50
+
+    if joueur.y <= -10:
+        joueur.deplacement_bas()
+
+    if joueur.y >= 315:
+        joueur.deplacement_haut()
+
+    if sanglier.x <= -50 :
+        sanglier.x = 1000
+        sanglier.y = random.randint(0,300)
+
+    if sanglier_rect.collidepoint(balle.x, balle.y) and tir == 1 :
+        vie_sanglier.pop()   
+        tir = 0
+        
+    if sanglier_rect.collidepoint(joueur.x, joueur.y) :
+        vie_chasseur.pop()
+
+    if len(vie_chasseur) == 0 :
+        YouLose = fond2.render('YOU LOSE !', True, RED)
+        write(YouLose, 350, 100)
+        pygame.display.flip()
+        time.sleep(2)
+        break
+
+        
+    if len(vie_sanglier) == 0 :
+        YouWon = fond2.render('YOU WON !', True, RED)
+        write(YouWon, 350, 100)
+        pygame.display.flip()
+        time.sleep(2)
+        Won = 1
+        break
+        
+    fenetre.blit(bg, (0,0))
+    scoreSurfChasseur = fond.render('Vie : %s' % (len(vie_chasseur)), True, RED)
+    scoreSurfSanglier = fond.render('Vies : %s' % (len(vie_sanglier)), True, RED)
+    nb_balles_surf = fond.render('balles : %s' % nb_balles,True,YELLOW)
+    write(nb_balles_surf,0 ,30)
+    write(scoreSurfChasseur ,0 ,3)
+    write(scoreSurfSanglier ,895 ,3)
+    write(coeur1 ,60 ,0)
+    write(coeur2 ,965 ,0)
+    write(icone_balle ,100 ,25)
+    
+    if tir == 1 :
+        balle.affichage()
+        
+    joueur.affichage()
+    sanglier.affichage()
+    pygame.display.flip()
+    
+
+if Won == 1 :
+    pygame.display.set_caption('Level 1')
+    fenetre.blit(bg,(0,0))
+    Level1Surf = fond2.render('LEVEL 1', True, RED)
+    write(Level1Surf, 350, 100)
+    pygame.display.flip()
+    time.sleep(3)
+    #while True :
+    
